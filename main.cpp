@@ -17,7 +17,10 @@ typedef struct GraphTree {
     GraphTree *parent;
     GraphTree *left;
     GraphTree *right;
+    unsigned long long int index;
 } ShannonTree;
+
+typedef std::vector<GraphTree *> GraphIndex;
 
 typedef std::map<int, std::pair<GraphTree *, std::string>> MappedSymbols;
 typedef std::chrono::duration<int, std::milli> miliseconds_type;
@@ -33,6 +36,7 @@ int ENCODE_BITS = 8;
 int ESC_VALUE = 257;
 int EOS_VALUE = 256;
 MappedSymbols symbolMap;
+GraphIndex indexedGraph;
 
 
 auto
@@ -50,9 +54,13 @@ GraphTree *initGraph() {
     parent->symbolExtended = 0;
     parent->nrOfApp = 2;
 
+
     parent->parent = NULL;
     parent->left = left;
     parent->right = right;
+    parent->index = 1;
+
+    indexedGraph.push_back(parent);
 
     left->parent = parent;
     right->parent = parent;
@@ -71,6 +79,12 @@ GraphTree *initGraph() {
 
     left->nrOfApp = 1;
     right->nrOfApp = 1;
+
+    left->index = 2;
+    right->index = 3;
+
+    indexedGraph.push_back(left);
+    indexedGraph.push_back(right);
 
     symbolMap[right->symbol + right->symbolExtended].first = right;
     symbolMap[right->symbol + right->symbolExtended].second = "1";
@@ -108,6 +122,7 @@ void updateSymbol(GraphSearch result) {
 void addSymbol(GraphSearch result, unsigned char symbol) {
     GraphTree *left, *right;
 
+
     left = new GraphTree;
     left->nrOfApp = 1;
     left->right = NULL;
@@ -115,6 +130,7 @@ void addSymbol(GraphSearch result, unsigned char symbol) {
     left->symbol = symbol;
     left->symbolExtended = 0;
     left->parent = result.reference;
+    left->index = (result.reference)->index + 1;
 
     right = new GraphTree;
     right->nrOfApp = 1;
@@ -123,6 +139,7 @@ void addSymbol(GraphSearch result, unsigned char symbol) {
     right->symbol = 255;
     right->symbolExtended = 2;
     right->parent = result.reference;
+    right->index = (result.reference)->index + 2;
 
 
     (result.reference)->left = left;
@@ -131,23 +148,25 @@ void addSymbol(GraphSearch result, unsigned char symbol) {
     (result.reference)->symbol = 0;
     (result.reference)->symbolExtended = 0;
 
+    indexedGraph.push_back(left);
+    indexedGraph.push_back(right);
+
+
+    symbolMap[ESC_VALUE].first = right;
+
 
 }
 
-/**
-* After a new symbol is added we need to update with one unit all parent nodes
-*/
-void updateNoOfApp(GraphTree *node) {
-    GraphTree *iterator;
-    iterator = node->parent;
-    while (iterator != NULL) {
-        node->nrOfApp++;
+void displayIndexedGraph() {
+    GraphIndex::size_type iterator;
+    for (iterator = 0; iterator < indexedGraph.size(); ++iterator) {
+        std::cout << (indexedGraph[iterator])->nrOfApp << " " << (indexedGraph[iterator])->index << " -> " << iterator + 1 << "\n";
     }
 }
 
-
 void displayGraph(GraphTree *root) {
     if ((root->symbol + root->symbolExtended) == 0) {
+        std::cout << "Pondere: " << root->nrOfApp << "\n";
         displayGraph(root->left);
         displayGraph(root->right);
     } else {
@@ -155,6 +174,45 @@ void displayGraph(GraphTree *root) {
     }
 
 
+}
+
+void balanceGraph(GraphTree *node) {
+    GraphTree *aux, *changeAux;
+    GraphIndex::size_type iterator, auxIndex;
+
+    for (iterator = node->index - 1; iterator > 0; iterator--) {
+        if ((indexedGraph[iterator - 1])->nrOfApp >= node->nrOfApp) {
+            break;
+        }
+    }
+    if (iterator == node->index - 1) {
+        node->parent->nrOfApp++;
+        if (node->parent->parent != NULL) {
+            balanceGraph(node->parent);
+        }
+
+    }
+
+    if (iterator == node->index - 2) {
+        (indexedGraph[iterator - 1])->right = indexedGraph[iterator];
+        (indexedGraph[iterator - 1])->left = node;
+        indexedGraph[iterator]->index++;
+        node->index--;
+        indexedGraph[iterator] = node;
+        indexedGraph[iterator + 1] = (indexedGraph[iterator - 1])->right;
+        balanceGraph(node);
+    }
+
+    if (iterator > node->index - 2) {
+        (indexedGraph[iterator - 1])->right = indexedGraph[iterator];
+        (indexedGraph[iterator - 1])->left = node;
+        indexedGraph[iterator]->index++;
+        node->index--;
+        indexedGraph[iterator] = node;
+        indexedGraph[iterator + 1] = (indexedGraph[iterator - 1])->right;
+        //balanceGraph(node);
+    }
+    std::cout << "\n\n";
 }
 
 void encodeSymbol(unsigned char symbol, GraphTree *parent) {
@@ -167,7 +225,25 @@ void encodeSymbol(unsigned char symbol, GraphTree *parent) {
         addSymbol(result, symbol);
     }
 
-    //updateNoOfApp(result.reference);
+    balanceGraph(result.reference);
+
+
+}
+
+void swapChild(GraphTree *root) {
+    GraphTree *aux;
+    aux = root->left;
+    root->left = root->right;
+    root->right = aux;
+}
+
+void balanceTree(GraphTree *root) {
+
+    if ((root->symbol + root->symbolExtended) == 0) {
+        if (root->left->nrOfApp < root->right->nrOfApp) {
+            swapChild(root);
+        }
+    }
 }
 
 void encodeFile() {
@@ -179,10 +255,16 @@ void compressFile(std::string fileName) {
 
     GraphTree *huffmanTree;
     huffmanTree = initGraph();
-    displayGraph(huffmanTree);
     encodeSymbol('a', huffmanTree);
+    encodeSymbol('b', huffmanTree);
+    displayIndexedGraph();
     std::cout << "\n\n";
     displayGraph(huffmanTree);
+//    balanceTree(huffmanTree);
+//    encodeSymbol('b', huffmanTree);
+//    balanceTree(huffmanTree);
+//    std::cout << "\n\n";
+//    displayGraph(huffmanTree);
 }
 
 void uncompressFile(std::string fileName) {
