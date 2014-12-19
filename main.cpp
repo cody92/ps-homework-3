@@ -203,7 +203,7 @@ void balanceGraph(GraphTree *node) {
         balanceGraph(node);
     }
 
-    if (iterator > node->index - 2) {
+    if (iterator > node->index - 2 && node->index - 2 > 1) {
         aux = indexedGraph[iterator - 1];
         indexedGraph[iterator - 1] = node;
         auxIndex = node->index;
@@ -222,7 +222,7 @@ void balanceGraph(GraphTree *node) {
         } else {
             changeAux->right = node;
         }
-        //balanceGraph(indexedGraph[iterator - 1]);
+        balanceGraph(indexedGraph[iterator - 1]);
     }
     std::cout << "\n\n";
 }
