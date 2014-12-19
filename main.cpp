@@ -190,7 +190,7 @@ void balanceGraph(GraphTree *node) {
         if (node->parent->parent != NULL) {
             balanceGraph(node->parent);
         }
-
+        return void();
     }
 
     if (iterator == node->index - 2) {
@@ -201,9 +201,10 @@ void balanceGraph(GraphTree *node) {
         indexedGraph[iterator] = node;
         indexedGraph[iterator + 1] = (indexedGraph[iterator - 1])->right;
         balanceGraph(node);
+        return void();
     }
 
-    if (iterator > node->index - 2 && node->index - 2 > 1) {
+    if ((iterator - (node->index - 2)) > 0 && node->index - 2 >= 0) {
         aux = indexedGraph[iterator - 1];
         indexedGraph[iterator - 1] = node;
         auxIndex = node->index;
@@ -223,8 +224,9 @@ void balanceGraph(GraphTree *node) {
             changeAux->right = node;
         }
         balanceGraph(indexedGraph[iterator - 1]);
+        //return void();
     }
-    std::cout << "\n\n";
+    //return void();
 }
 
 void encodeSymbol(unsigned char symbol, GraphTree *parent) {
