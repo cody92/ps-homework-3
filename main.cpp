@@ -177,7 +177,7 @@ void displayGraph(GraphTree *root) {
 }
 
 void balanceGraph(GraphTree *node) {
-    GraphTree *aux, *changeAux;
+    GraphTree *aux, *changeAux, *parent;
     GraphIndex::size_type iterator, auxIndex;
 
     for (iterator = node->index - 1; iterator > 0; iterator--) {
@@ -204,13 +204,25 @@ void balanceGraph(GraphTree *node) {
     }
 
     if (iterator > node->index - 2) {
-        (indexedGraph[iterator - 1])->right = indexedGraph[iterator];
-        (indexedGraph[iterator - 1])->left = node;
-        indexedGraph[iterator]->index++;
-        node->index--;
-        indexedGraph[iterator] = node;
-        indexedGraph[iterator + 1] = (indexedGraph[iterator - 1])->right;
-        //balanceGraph(node);
+        aux = indexedGraph[iterator - 1];
+        indexedGraph[iterator - 1] = node;
+        auxIndex = node->index;
+        parent = aux->parent;
+        changeAux = node->parent;
+        if (iterator % 2 == 0) {
+            parent->left = node;
+        } else {
+            parent->right = node;
+        }
+        node->parent = parent;
+
+        indexedGraph[auxIndex - 1] = aux;
+        if (auxIndex % 2 == 0) {
+            changeAux->left = node;
+        } else {
+            changeAux->right = node;
+        }
+        //balanceGraph(indexedGraph[iterator - 1]);
     }
     std::cout << "\n\n";
 }
