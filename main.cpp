@@ -157,6 +157,23 @@ void addSymbol(GraphSearch result, unsigned char symbol) {
 
 }
 
+string getCode(GraphTree *node) {
+    string result;
+    result = "";
+    if (node->index % 2 == 0 && node->parent != NULL) {
+        result = "0";
+    } else if(node->parent != NULL) {
+        result = "1";
+    }
+
+    if (node->parent != NULL) {
+        return getCode(node->parent) + result;
+    } else {
+        return result;
+    }
+}
+
+
 void displayIndexedGraph() {
     GraphIndex::size_type iterator;
     for (iterator = 0; iterator < indexedGraph.size(); ++iterator) {
@@ -220,6 +237,7 @@ void balanceGraph(GraphTree *node) {
             parent->right = node;
         }
         node->parent = parent;
+        aux->parent = changeAux;
 
         indexedGraph[auxIndex - 1] = aux;
         if (auxIndex % 2 == 0) {
@@ -295,8 +313,8 @@ void compressFile(std::string fileName) {
 //    encodeSymbol('e', huffmanTree);
 //    encodeSymbol('f', huffmanTree);
 //    encodeSymbol('g', huffmanTree);
-    displayIndexedGraph();
-    displayGraph(huffmanTree);
+//    displayIndexedGraph();
+//    displayGraph(huffmanTree);
 }
 
 void uncompressFile(std::string fileName) {
