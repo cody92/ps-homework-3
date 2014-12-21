@@ -160,8 +160,9 @@ void addSymbol(GraphSearch result, unsigned char symbol) {
 void displayIndexedGraph() {
     GraphIndex::size_type iterator;
     for (iterator = 0; iterator < indexedGraph.size(); ++iterator) {
-        std::cout << (indexedGraph[iterator])->nrOfApp << " " << (indexedGraph[iterator])->index << " -> " << iterator + 1 << "\n";
+        std::cout << ((indexedGraph[iterator])->symbol + (indexedGraph[iterator])->symbolExtended) << " " << (indexedGraph[iterator])->index << " -> " << iterator + 1 << " " << (indexedGraph[iterator])->nrOfApp << "\n";
     }
+    std::cout << "\n\n";
 }
 
 void displayGraph(GraphTree *root) {
@@ -205,12 +206,15 @@ void balanceGraph(GraphTree *node) {
     }
 
     if ((iterator - (node->index - 2)) > 0 && node->index - 2 >= 0) {
-        aux = indexedGraph[iterator - 1];
-        indexedGraph[iterator - 1] = node;
+        aux = indexedGraph[iterator];
         auxIndex = node->index;
+        node->index = aux->index;
+        aux->index = auxIndex;
+        indexedGraph[iterator] = node;
+
         parent = aux->parent;
         changeAux = node->parent;
-        if (iterator % 2 == 0) {
+        if (iterator % 2 == 1) {
             parent->left = node;
         } else {
             parent->right = node;
@@ -219,15 +223,30 @@ void balanceGraph(GraphTree *node) {
 
         indexedGraph[auxIndex - 1] = aux;
         if (auxIndex % 2 == 0) {
-            changeAux->left = node;
+            changeAux->left = aux;
         } else {
-            changeAux->right = node;
+            changeAux->right = aux;
         }
-        balanceGraph(indexedGraph[iterator - 1]);
+        balanceGraph(indexedGraph[iterator]);
         //return void();
     }
     //return void();
 }
+
+/**
+* Update symbol map
+*/
+void updateMap() {
+    int symbol;
+    GraphIndex::size_type iterator;
+    for (iterator = 0; iterator < indexedGraph.size(); iterator++) {
+        symbol = indexedGraph[iterator]->symbolExtended + indexedGraph[iterator]->symbol;
+        if (symbol > 0) {
+            symbolMap[symbol].first = indexedGraph[iterator];
+        }
+    }
+}
+
 
 void encodeSymbol(unsigned char symbol, GraphTree *parent) {
     GraphSearch result;
@@ -238,8 +257,8 @@ void encodeSymbol(unsigned char symbol, GraphTree *parent) {
     } else {
         addSymbol(result, symbol);
     }
-
     balanceGraph(result.reference);
+    updateMap();
 
 
 }
@@ -271,14 +290,13 @@ void compressFile(std::string fileName) {
     huffmanTree = initGraph();
     encodeSymbol('a', huffmanTree);
     encodeSymbol('b', huffmanTree);
+    encodeSymbol('c', huffmanTree);
+    encodeSymbol('a', huffmanTree);
+//    encodeSymbol('e', huffmanTree);
+//    encodeSymbol('f', huffmanTree);
+//    encodeSymbol('g', huffmanTree);
     displayIndexedGraph();
-    std::cout << "\n\n";
     displayGraph(huffmanTree);
-//    balanceTree(huffmanTree);
-//    encodeSymbol('b', huffmanTree);
-//    balanceTree(huffmanTree);
-//    std::cout << "\n\n";
-//    displayGraph(huffmanTree);
 }
 
 void uncompressFile(std::string fileName) {
