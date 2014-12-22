@@ -66,5 +66,10 @@ public:
     int const getEOS_VALUE() const {
         return EOS_VALUE;
     }
+
+
+    GraphTree *getRootNode() const {
+        return rootNode;
+    }
 };
 

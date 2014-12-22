@@ -38,18 +38,13 @@ std::string HuffmanCompress::getSymbolBits(unsigned char symbol) {
 
 void HuffmanCompress::process() {
     unsigned char symbol;
-    std::string tempData, eosSymbol;
-    GraphTree *tempEOS;
+    std::string tempData;
     while ((symbol = this->getNextChar()) != 0) {
         tempData = this->getSymbolBits(symbol);
         this->addData(tempData);
         this->encodeSymbol(symbol);
     }
     this->addEOS();
-//    tempEOS = this->getSymbolMap()[this->getEOS_VALUE()];
-//    eosSymbol = this->getCode();
-//    this->addData(eosSymbol);
-    //this->displayIndexedGraph();
 }
 
 void HuffmanCompress::addData(std::string string) {

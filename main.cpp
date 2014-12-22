@@ -8,6 +8,7 @@
 #include "InputStream.h"
 #include "OutputStream.h"
 #include "HuffmanCompress.h"
+#include "HuffmanDecompress.h"
 
 
 using namespace std;
@@ -30,8 +31,17 @@ void compressFile(std::string fileName) {
 
 }
 
-void uncompressFile(std::string fileName) {
+void decompressFile(std::string fileName) {
+    InputStream *inputHandler;
+    OutputStream *outputHandler;
+    HuffmanDecompress *huffmanHandler;
 
+    inputHandler = new InputStream(fileName+ ".pshd");
+    outputHandler = new OutputStream(fileName + ".pshdd");
+    huffmanHandler = new HuffmanDecompress(inputHandler, outputHandler);
+    huffmanHandler->process();
+    delete inputHandler;
+    delete outputHandler;
 }
 
 void displayOptions() {
@@ -114,7 +124,7 @@ int main() {
     std::cout << "Compressed time: " << std::chrono::duration_cast<miliseconds_type>(timeC).count() << " miliseconds.\n";
 
     auto startU = std::chrono::high_resolution_clock::now();
-//    uncompressFile(files[option - 1]);
+    decompressFile(files[13]);
 
     auto endU = std::chrono::high_resolution_clock::now();
     auto timeU = endU - startU;
