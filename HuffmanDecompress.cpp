@@ -45,7 +45,7 @@ bool HuffmanDecompress::processByte(std::bitset<8> byte) {
             if (this->symbolString.size() == 8) {
                 std::bitset<8> tempByteString(this->symbolString);
                 tempCharSymbol = (unsigned long int) tempByteString.to_ullong();
-                std::cout << (unsigned char) tempCharSymbol;
+                this->outputHandler->display((unsigned char) tempCharSymbol);
                 this->escFlag = false;
                 this->encodeSymbol((unsigned char) tempCharSymbol);
                 tempNode = this->getRootNode();
@@ -65,7 +65,7 @@ bool HuffmanDecompress::processByte(std::bitset<8> byte) {
                 } else if (symbolVal == this->getEOS_VALUE()) {
                     return false;
                 } else {
-                    std::cout << tempNode->symbol;
+                    this->outputHandler->display(tempNode->symbol);
                     this->encodeSymbol(tempNode->symbol);
 //                    this->displayIndexedGraph();
                     tempNode = this->getRootNode();

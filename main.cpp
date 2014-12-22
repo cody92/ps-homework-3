@@ -36,7 +36,7 @@ void decompressFile(std::string fileName) {
     OutputStream *outputHandler;
     HuffmanDecompress *huffmanHandler;
 
-    inputHandler = new InputStream(fileName+ ".pshd");
+    inputHandler = new InputStream(fileName + ".pshd");
     outputHandler = new OutputStream(fileName + ".pshdd");
     huffmanHandler = new HuffmanDecompress(inputHandler, outputHandler);
     huffmanHandler->process();
@@ -108,30 +108,30 @@ int main() {
     };
 
     int option;
-    //displayOptions();
-    //std::cout << "Select file!..\n";
-    //std::cin >> option;
-//    if (option < 1 && option > 14) {
-//        std::cout << "Invalid option!";
-//        return 0;
-//    }
+    displayOptions();
+    std::cout << "Select file!..\n";
+    std::cin >> option;
+    if (option < 1 && option > 14) {
+        std::cout << "Invalid option!";
+        return 0;
+    }
     auto startC = std::chrono::high_resolution_clock::now();
 
 
-    compressFile(files[13]);
+    compressFile(files[option - 1]);
     auto endC = std::chrono::high_resolution_clock::now();
     auto timeC = endC - startC;
     std::cout << "Compressed time: " << std::chrono::duration_cast<miliseconds_type>(timeC).count() << " miliseconds.\n";
 
     auto startU = std::chrono::high_resolution_clock::now();
-    decompressFile(files[13]);
+    decompressFile(files[option - 1]);
 
     auto endU = std::chrono::high_resolution_clock::now();
     auto timeU = endU - startU;
     std::cout << "Uncompressed time: " << std::chrono::duration_cast<miliseconds_type>(timeU).count() << " miliseconds.\n";
-//    displayInformations(files[option - 1]);
+    displayInformations(files[option - 1]);
 
-    //std::cin >> option;
+    std::cin >> option;
 
     return 0;
 }

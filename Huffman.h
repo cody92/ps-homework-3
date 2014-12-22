@@ -47,7 +47,7 @@ public:
 
     void updateMap();
 
-    std::string encodeSymbol(unsigned char);
+    void encodeSymbol(unsigned char);
 
     void displayIndexedGraph();
 

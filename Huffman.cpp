@@ -197,7 +197,7 @@ void Huffman::updateMap() {
     }
 }
 
-std::string Huffman::encodeSymbol(unsigned char symbol) {
+void Huffman::encodeSymbol(unsigned char symbol) {
     GraphSearch result;
 
     result = findSymbol(symbol);

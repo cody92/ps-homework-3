@@ -57,3 +57,8 @@ OutputStream::~OutputStream() {
     this->outputFile.close();
 
 }
+
+
+void OutputStream::display(unsigned char symbol) {
+    this->outputFile << symbol;
+}

@@ -22,4 +22,5 @@ public:
     ~OutputStream();
 
     void addData(std::string);
+    void display(unsigned char);
 };
