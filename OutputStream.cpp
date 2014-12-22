@@ -10,8 +10,9 @@ void OutputStream::openFile() {
     }
 }
 
-OutputStream::OutputStream(std::string fileName) {
+OutputStream::OutputStream(std::string fileName, bool mode) {
     this->outputFileName = fileName;
+    this->mode = mode;
     this->openFile();
 }
 
@@ -53,7 +54,9 @@ void OutputStream::addData(std::string string) {
 }
 
 OutputStream::~OutputStream() {
-    this->write();
+    if (this->mode) {
+        this->write();
+    }
     this->outputFile.close();
 
 }

@@ -23,7 +23,7 @@ void compressFile(std::string fileName) {
     HuffmanCompress *huffmanHandler;
 
     inputHandler = new InputStream(fileName);
-    outputHandler = new OutputStream(fileName + ".pshd");
+    outputHandler = new OutputStream(fileName + ".pshd", true);
     huffmanHandler = new HuffmanCompress(inputHandler, outputHandler);
     huffmanHandler->process();
     delete inputHandler;
@@ -37,7 +37,7 @@ void decompressFile(std::string fileName) {
     HuffmanDecompress *huffmanHandler;
 
     inputHandler = new InputStream(fileName + ".pshd");
-    outputHandler = new OutputStream(fileName + ".pshdd");
+    outputHandler = new OutputStream(fileName + ".pshdd", false);
     huffmanHandler = new HuffmanDecompress(inputHandler, outputHandler);
     huffmanHandler->process();
     delete inputHandler;
@@ -73,8 +73,8 @@ void displayInformations(std::string fileName) {
     std::ifstream::pos_type compressedFileSize, fileSize, uncompressedFileSize;
     std::string compressedFileName, uncompressedFileName;
 
-    compressedFileName = fileName + ".psh";
-    uncompressedFileName = fileName + ".pshu";
+    compressedFileName = fileName + ".pshd";
+    uncompressedFileName = fileName + ".pshdd";
 
     compressedFileSize = filesize(compressedFileName);
     fileSize = filesize(fileName);
