@@ -1,4 +1,4 @@
-#include <fstream>
+#include <stdlib.h>
 #include "InputStream.h"
 
 void InputStream::openFile() {
@@ -9,22 +9,21 @@ void InputStream::openFile() {
     }
 }
 
-void InputStream::InputStream(std::string fileName) {
+InputStream::InputStream(std::string fileName) {
     this->inputFileName = fileName;
     this->openFile();
 }
 
 unsigned char InputStream::getNextChar() {
-    unsigned char symbol;
-    if (!this->inputFile.eof()) {
-        this->inputFile >> symbol;
-    } else {
+    unsigned char symbol=0;
+    this->inputFile >> symbol;
+    if (this->inputFile.eof()) {
         symbol = 0;
     }
     return symbol;
 
 }
 
-void InputStream::~InputStream() {
+InputStream::~InputStream() {
     this->inputFile.close();
 }

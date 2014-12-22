@@ -1,7 +1,13 @@
+#pragma once
+
+#include <fstream>
+#include <iostream>
+#include <stdlib.h>
+using namespace std;
 class OutputStream {
     std::string outputFileName;
     std::string buffer;
-    ofstream outputFile;
+    std::ofstream outputFile;
     static const int MAX_BUFFER_SIZE = 8;
 
     void openFile();
@@ -11,9 +17,9 @@ class OutputStream {
     void write();
 
 public:
-    void OutputStream(std::string);
+    OutputStream(std::string);
 
-    void ~OutputStream();
+    ~OutputStream();
 
     void addData(std::string);
 };

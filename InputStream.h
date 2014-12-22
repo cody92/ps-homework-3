@@ -1,10 +1,15 @@
+#pragma once
+
+#include <fstream>
+#include <iostream>
+using namespace std;
 class InputStream {
     std::string inputFileName;
-    ifstream inputFile;
+    std::ifstream inputFile;
     void openFile();
 
 public:
-    void InputStream(std::string);
+    InputStream(std::string);
     unsigned char getNextChar();
-    void ~InputStream();
+    ~InputStream();
 };
