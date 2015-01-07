@@ -114,7 +114,7 @@ void Huffman::addSymbol(GraphSearch result, unsigned char symbol) {
 void Huffman::displayIndexedGraph() {
     GraphIndex::size_type iterator;
     for (iterator = 0; iterator < indexedGraph.size(); ++iterator) {
-        std::cout << ((indexedGraph[iterator])->symbol + (indexedGraph[iterator])->symbolExtended) << " " << (indexedGraph[iterator])->index << " -> " << iterator + 1 << " " << (indexedGraph[iterator])->nrOfApp << "\n";
+        std::cout << (unsigned char) ((indexedGraph[iterator])->symbol + (indexedGraph[iterator])->symbolExtended) << " " << (indexedGraph[iterator])->index << " -> " << iterator + 1 << " " << (indexedGraph[iterator])->nrOfApp << "\n";
     }
     std::cout << "\n\n";
 }
@@ -131,31 +131,56 @@ void Huffman::displayGraph(GraphTree *root) {
 
 }
 
-void Huffman::balanceGraph(GraphTree *node) {
+void Huffman::balanceGraph(GraphTree *node, bool init) {
     GraphTree *aux, *changeAux, *parent;
     GraphIndex::size_type iterator, auxIndex;
 
+//    this->displayIndexedGraph();
     for (iterator = node->index - 1; iterator > 0; iterator--) {
-        if ((indexedGraph[iterator - 1])->nrOfApp >= node->nrOfApp) {
+        if ((indexedGraph[iterator - 1])->nrOfApp > node->nrOfApp) {
             break;
+        } else if ((indexedGraph[iterator - 1])->nrOfApp == node->nrOfApp) {
+            if(init == true) {
+                break;
+            }
+            if ((indexedGraph[iterator - 1])->getSymbol() <= node->getSymbol()) {
+                break;
+            }
         }
     }
     if (iterator == node->index - 1) {
         node->parent->nrOfApp++;
         if (node->parent->parent != NULL) {
-            balanceGraph(node->parent);
+            balanceGraph(node->parent, false);
         }
         return void();
     }
 
     if (iterator == node->index - 2) {
-        (indexedGraph[iterator - 1])->right = indexedGraph[iterator];
-        (indexedGraph[iterator - 1])->left = node;
-        indexedGraph[iterator]->index++;
-        node->index--;
+        aux = indexedGraph[iterator];
+        auxIndex = node->index;
+        node->index = aux->index;
+        aux->index = auxIndex;
         indexedGraph[iterator] = node;
-        indexedGraph[iterator + 1] = (indexedGraph[iterator - 1])->right;
-        balanceGraph(node);
+
+        parent = aux->parent;
+        changeAux = node->parent;
+        if (iterator % 2 == 1) {
+            parent->left = node;
+        } else {
+            parent->right = node;
+        }
+        node->parent = parent;
+        aux->parent = changeAux;
+
+        indexedGraph[auxIndex - 1] = aux;
+        if (auxIndex % 2 == 0) {
+            changeAux->left = aux;
+        } else {
+            changeAux->right = aux;
+        }
+
+        balanceGraph(node, false);
         return void();
     }
 
@@ -182,7 +207,10 @@ void Huffman::balanceGraph(GraphTree *node) {
         } else {
             changeAux->right = aux;
         }
-        balanceGraph(indexedGraph[iterator]);
+
+        //updateChildrens(aux->index - 1, node->index - 1);
+
+        balanceGraph(indexedGraph[iterator], false);
     }
 }
 
@@ -199,7 +227,7 @@ void Huffman::updateMap() {
 
 void Huffman::encodeSymbol(unsigned char symbol) {
     GraphSearch result;
-
+    //cout << "Sy " << symbol << " ---------------------------------------------------------------------------------\n";
     result = findSymbol(symbol);
     if (result.type == true) {
         updateSymbol(result);
@@ -207,6 +235,48 @@ void Huffman::encodeSymbol(unsigned char symbol) {
         addSymbol(result, symbol);
     }
 
-    balanceGraph(result.reference);
+    balanceGraph(result.reference, true);
     updateMap();
+    //this->displayIndexedGraph();
+}
+
+void Huffman::updateChildrens(int n, int m) {
+    int iterator;
+    GraphTree *backLeft, *backRight, *auxLeft, *auxRight;
+
+    auxLeft = this->indexedGraph[n]->left;
+    auxRight = this->indexedGraph[n]->right;
+
+    iterator = m + 1;
+
+    while (iterator <= n) {
+        backLeft = auxLeft;
+        backRight = auxRight;
+        if (!this->isLeaf(this->indexedGraph[iterator])) {
+            auxLeft = this->indexedGraph[iterator]->left;
+            auxRight = this->indexedGraph[iterator]->right;
+            backLeft->parent = this->indexedGraph[iterator];
+            backRight->parent = this->indexedGraph[iterator];
+            this->indexedGraph[iterator]->left = backLeft;
+            this->indexedGraph[iterator]->right = backRight;
+        }
+        iterator++;
+    }
+
+
+
+}
+
+
+bool Huffman::isLeaf(GraphTree *node) {
+    int sum;
+    bool isLeaf;
+    sum = node->symbol + node->symbolExtended;
+    if (sum > 0) {
+        isLeaf = true;
+    } else {
+        isLeaf = false;
+    }
+
+    return isLeaf;
 }

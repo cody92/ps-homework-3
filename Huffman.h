@@ -5,6 +5,7 @@
 #include <iostream>
 
 using namespace std;
+
 struct GraphTree {
     unsigned char symbol;
     unsigned char symbolExtended;
@@ -13,6 +14,11 @@ struct GraphTree {
     GraphTree *left;
     GraphTree *right;
     unsigned long long int index;
+
+    int getSymbol() {
+        return symbol + symbolExtended;
+    };
+
 };
 
 typedef std::vector<GraphTree *> GraphIndex;
@@ -43,13 +49,17 @@ public:
 
     void addSymbol(GraphSearch, unsigned char);
 
-    void balanceGraph(GraphTree *);
+    void balanceGraph(GraphTree *, bool);
 
     void updateMap();
 
     void encodeSymbol(unsigned char);
 
     void displayIndexedGraph();
+
+    void updateChildrens(int, int);
+
+    bool isLeaf(GraphTree *);
 
     void displayGraph(GraphTree *);
 

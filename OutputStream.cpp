@@ -8,6 +8,7 @@ void OutputStream::openFile() {
         std::cout << "Could not open output file! " << this->outputFileName;
         exit(-1);
     }
+    this->outputFile.unsetf(ios_base::skipws);
 }
 
 OutputStream::OutputStream(std::string fileName, bool mode) {
@@ -26,6 +27,7 @@ void OutputStream::writeToFile(std::string chunk) {
         }
     }
     std::bitset<8> temp(chunk);
+    //std::cout << (int) temp.to_ulong() << " ";
     this->outputFile << (unsigned char) temp.to_ulong();
 }
 

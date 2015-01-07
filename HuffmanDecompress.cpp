@@ -22,6 +22,7 @@ void HuffmanDecompress::process() {
     this->escFlag = false;
     this->symbolString = "";
     while ((symbol = this->getNextChar()) != 0 && process) {
+        //std::cout << (int) symbol << " ";
         process = this->addData(symbol);
     }
 }

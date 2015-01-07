@@ -7,6 +7,7 @@ void InputStream::openFile() {
         std::cout << "Could not open output file! " << this->inputFileName;
         exit(-1);
     }
+    this->inputFile.unsetf(ios_base::skipws);
 }
 
 InputStream::InputStream(std::string fileName) {
@@ -15,7 +16,7 @@ InputStream::InputStream(std::string fileName) {
 }
 
 unsigned char InputStream::getNextChar() {
-    unsigned char symbol=0;
+    unsigned char symbol = 0;
     this->inputFile >> symbol;
     if (this->inputFile.eof()) {
         symbol = 0;
